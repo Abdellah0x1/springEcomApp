@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -55,4 +56,10 @@ public class User {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name="user_addresses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name="address_id"))
     private List<Address> addresses;
+
+    public User(@NotBlank @Size(min = 3, max = 20) String username, @NotBlank @Size(max = 50) @Email(message =  "Invalid Email Format") String email, @NotBlank String password) {
+        this.userName = username;
+        this.email = email;
+        this.password = password;
+    }
 }

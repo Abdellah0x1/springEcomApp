@@ -1,7 +1,7 @@
 package com.ecommerce.project.model;
 
 
-import enums.AppRole;
+import com.ecommerce.project.enums.AppRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(length = 20, name="role_name")
     @ToString.Exclude
-    private AppRole roleName; 
+    private AppRole roleName;
 
     public Role( AppRole roleName) {
         this.roleName = roleName;
