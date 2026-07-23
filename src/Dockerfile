@@ -1,8 +1,9 @@
-FROM ubuntu:latest
-LABEL authors="Abdellah"
-WORKDIR /src
-COPY . .
-RUN mvn install
+FROM eclipse-temurin:17-jre-alpine
 
+WORKDIR /app
 
-ENTRYPOINT ["top", "-b"]
+COPY target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
