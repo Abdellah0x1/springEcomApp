@@ -130,7 +130,7 @@ public class AuthController {
     @GetMapping("/user")
     public ResponseEntity<UserInfoResponse> currentUser(Authentication authentication){
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
+        List<String> roles = userDetails.getAuthorities().stream()  
                 .map(item -> item.getAuthority()).toList();
         UserInfoResponse response = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(),roles);
         return ResponseEntity.ok().body(response);
