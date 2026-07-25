@@ -33,7 +33,6 @@ public class User {
     @Email
     @Column(name = "email")
     private String email;
-
     @NotBlank
     @Size(max=120)
     @Column(name = "password")
@@ -56,6 +55,11 @@ public class User {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name="user_addresses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name="address_id"))
     private List<Address> addresses;
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Cart cart;
+
 
     public User(@NotBlank @Size(min = 3, max = 20) String username, @NotBlank @Size(max = 50) @Email(message =  "Invalid Email Format") String email, @NotBlank String password) {
         this.userName = username;

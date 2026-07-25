@@ -21,5 +21,4 @@ public class SingupRequest {
     private Set<String> roles;
     @Size(min = 6, max = 40, message = "Password size must be between 6 and 40 characters")
     private String password;
-
 }

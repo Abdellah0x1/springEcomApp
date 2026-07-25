@@ -48,7 +48,6 @@ public class CategoryServiceImpl implements CategoryService{
         categoryResponse.setLastPage(categoryPage.isLast());
 
         return categoryResponse;
-
     }
 
     @Override
