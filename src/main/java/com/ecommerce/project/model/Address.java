@@ -44,20 +44,21 @@ public class Address {
     private String country;
 
     @NotBlank
-    @Size(min= 6, message = "Zipcode name must contain at least 6 characters")
+    @Size(min= 5, message = "Zipcode name must contain at least 5 characters")
     private String zipcode;
 
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users = new ArrayList<>();
 
-    public Address(String building, String city, String country, String state, String street, List<User> users) {
+    @ManyToOne()
+    @JoinColumn(name="user_id")
+    private User user;
+
+    public Address(String building, String city, String country, String state, String street, User users) {
         this.building = building;
         this.city = city;
         this.country = country;
         this.state = state;
         this.street = street;
-        this.users = users;
+        this.user = user;
     }
 
 }
