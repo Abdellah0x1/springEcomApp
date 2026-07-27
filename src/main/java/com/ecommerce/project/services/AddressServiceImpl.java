@@ -85,12 +85,10 @@ public class AddressServiceImpl implements AddressService {
          Address address = addressRepository.findById(addressId).orElseThrow(()-> new ResourceNotFoundException("Address","id", addressId));
 
          User user = address.getUser();
-         user.getAddresses().removeIf(address -> address.getAddressId().equals(addressId));
+         user.getAddresses().removeIf(userAddress -> userAddress.getAddressId().equals(addressId));
          userRepository.save(user);
 
          addressRepository.delete(address);
          return "Address deleted successfully with id: " + addressId;
     }
-
-
 }

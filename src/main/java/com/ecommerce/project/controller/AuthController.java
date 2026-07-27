@@ -46,11 +46,11 @@ public class AuthController {
     RoleRepository roleRepository;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> Login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> Login(@RequestBody @Valid LoginRequest loginRequest){
         Authentication authentication ;
         try {
             authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
         }catch (AuthenticationException e){
             Map<String , Object> body = new HashMap<>();
@@ -63,9 +63,10 @@ public class AuthController {
 
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority()).toList();
-        UserInfoResponse reponse = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),roles);
+        UserInfoResponse reponse = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),userDetails.getEmail(),roles);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(reponse);
     }
 
@@ -132,7 +133,7 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()  
                 .map(item -> item.getAuthority()).toList();
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(),roles);
+        UserInfoResponse response = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(),userDetails.getEmail(),roles);
         return ResponseEntity.ok().body(response);
     }
 }

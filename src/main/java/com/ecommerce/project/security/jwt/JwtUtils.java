@@ -55,10 +55,13 @@ public class JwtUtils {
 
     //jwt cookie builder from userDetails
     public ResponseCookie generateJwtCookie(UserDetailsImpl userDetails){
-           String jwt = generateJwtTokenFromUsername(userDetails.getUsername());
+           String jwt = generateJwtTokenFromEmail(userDetails.getEmail());
             ResponseCookie cookie = ResponseCookie.from(jwtCookie,jwt)
                     .path("/api")
                     .maxAge(24 * 60 * 60 ).httpOnly(false).build();
+
+            logger.debug("Generated JWT cookie for user {}",jwt);
+
         return cookie;
     }
 
@@ -70,8 +73,8 @@ public class JwtUtils {
     }
 
 
-    public String generateJwtTokenFromUsername(String username){
-         return  Jwts.builder().subject(username).issuedAt(new Date()).expiration(new Date(new Date().getTime() + jwtExpirationMS)).signWith(Key()).compact();
+    public String generateJwtTokenFromEmail(String email){
+         return  Jwts.builder().subject(email).issuedAt(new Date()).expiration(new Date(new Date().getTime() + jwtExpirationMS)).signWith(Key()).compact();
 
     }
 

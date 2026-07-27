@@ -2,6 +2,7 @@ package com.ecommerce.project.security.services;
 
 import com.ecommerce.project.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +17,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
@@ -26,15 +28,20 @@ public class UserDetailsImpl implements UserDetails {
     private Long id;
     @Getter
     private String username;
+
+    private String email;
+
     @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Collection<? extends GrantedAuthority> authorities, Long id, String password, String username) {
-        this.authorities = authorities;
-        this.id = id;
-        this.password = password;
+
+    public UserDetailsImpl(Long id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.id =  id;
         this.username = username;
+        this.email  = email;
+        this.password  = password;
+        this.authorities = authorities;
     }
 
     @Override
@@ -44,7 +51,8 @@ public class UserDetailsImpl implements UserDetails {
     //factory method
     public static UserDetailsImpl build(User user){
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getRoleName().name())).collect(Collectors.toList());
-        return new UserDetailsImpl(authorities,user.getUserId(),user.getPassword(),user.getUserName());
+//        return new UserDetailsImpl(authorities,user.getUserId(),user.getPassword(),user.getUserName());
+        return new UserDetailsImpl(user.getUserId(), user.getUserName(), user.getEmail(), user.getPassword(), authorities);
     }
 
     @Override
