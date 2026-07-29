@@ -1,0 +1,16 @@
+package com.ecommerce.project.payload;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProductImageDTO {
+    private Long id;
+    private String url;
+    private Integer displayOrder;
+
+}

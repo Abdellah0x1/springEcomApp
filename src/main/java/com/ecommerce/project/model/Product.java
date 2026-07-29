@@ -30,7 +30,10 @@ public class Product {
     private double price;
     private Double specialPrice;
     private double discount;
-    private String image;
+
+
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.MERGE, CascadeType.PERSIST},orphanRemoval = true)
+    private List<ProductImage> productImages = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -43,4 +46,5 @@ public class Product {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<CartItem> products = new ArrayList<>();
+
 }

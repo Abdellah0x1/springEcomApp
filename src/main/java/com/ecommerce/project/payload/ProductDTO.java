@@ -1,8 +1,13 @@
 package com.ecommerce.project.payload;
 
+import com.ecommerce.project.model.Product;
+import com.ecommerce.project.model.ProductImage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +20,5 @@ public class ProductDTO {
     private double price;
     private Double specialPrice;
     private double discount;
-    private String image;
-    
+    private List<ProductImageDTO> images = new ArrayList<>();
 }
