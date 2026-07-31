@@ -58,7 +58,8 @@ public class WebSecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(requests ->
-                requests.requestMatchers("/h2-console/**").permitAll()
+                requests.requestMatchers("/api/seller").hasAnyAuthority("ROLE_SELLER")
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/v3//api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
@@ -108,66 +109,66 @@ public class WebSecurityConfig {
     }
 
 //
-    @Bean
-    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return args -> {
-            // Retrieve or create roles
-            Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
-                    .orElseGet(() -> {
-                        Role newUserRole = new Role(AppRole.ROLE_USER);
-                        return roleRepository.save(newUserRole);
-                    });
-
-            Role sellerRole = roleRepository.findByRoleName(AppRole.ROLE_SELLER)
-                    .orElseGet(() -> {
-                        Role newSellerRole = new Role(AppRole.ROLE_SELLER);
-                        return roleRepository.save(newSellerRole);
-                    });
-
-            Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
-                    .orElseGet(() -> {
-                        Role newAdminRole = new Role(AppRole.ROLE_ADMIN);
-                        return roleRepository.save(newAdminRole);
-                    });
-
-            Set<Role> userRoles = Set.of(userRole);
-            Set<Role> sellerRoles = Set.of(sellerRole);
-            Set<Role> adminRoles = Set.of(userRole, sellerRole, adminRole);
-
-
-            // Create users if not already present
-            if (!userRepository.existsByEmail("user1@example.com\"")) {
-                User user1 = new User("user1", "user1@example.com", passwordEncoder.encode("password1"));
-                userRepository.save(user1);
-            }
-
-            if (!userRepository.existsByEmail("seller11@example.com")) {
-                User seller1 = new User("seller1", "seller1@example.com", passwordEncoder.encode("password2"));
-                userRepository.save(seller1);
-            }
-
-            if (!userRepository.existsByEmail("admin@example.com")) {
-                User admin = new User("admin", "admin@example.com", passwordEncoder.encode("adminPass"));
-                userRepository.save(admin);
-            }
-
-            // Update roles for existing users
-            userRepository.findByEmail("user1@example.com").ifPresent(user -> {
-                user.setRoles(userRoles);
-                userRepository.save(user);
-            });
-
-            userRepository.findByUserName("seller@example.com").ifPresent(seller -> {
-                seller.setRoles(sellerRoles);
-                userRepository.save(seller);
-            });
-
-            userRepository.findByUserName("admin@example.com").ifPresent(admin -> {
-                admin.setRoles(adminRoles);
-                userRepository.save(admin);
-            });
-        };
-    }
+//    @Bean
+//    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+//        return args -> {
+//            // Retrieve or create roles
+//            Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+//                    .orElseGet(() -> {
+//                        Role newUserRole = new Role(AppRole.ROLE_USER);
+//                        return roleRepository.save(newUserRole);
+//                    });
+//
+//            Role sellerRole = roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+//                    .orElseGet(() -> {
+//                        Role newSellerRole = new Role(AppRole.ROLE_SELLER);
+//                        return roleRepository.save(newSellerRole);
+//                    });
+//
+//            Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+//                    .orElseGet(() -> {
+//                        Role newAdminRole = new Role(AppRole.ROLE_ADMIN);
+//                        return roleRepository.save(newAdminRole);
+//                    });
+//
+//            Set<Role> userRoles = Set.of(userRole);
+//            Set<Role> sellerRoles = Set.of(sellerRole);
+//            Set<Role> adminRoles = Set.of(userRole, sellerRole, adminRole);
+//
+//
+//            // Create users if not already present
+//            if (!userRepository.existsByEmail("user1@example.com\"")) {
+//                User user1 = new User("user1", "user1@example.com", passwordEncoder.encode("password1"));
+//                userRepository.save(user1);
+//            }
+//
+//            if (!userRepository.existsByEmail("seller11@example.com")) {
+//                User seller1 = new User("seller1", "seller1@example.com", passwordEncoder.encode("password2"));
+//                userRepository.save(seller1);
+//            }
+//
+//            if (!userRepository.existsByEmail("admin@example.com")) {
+//                User admin = new User("admin", "admin@example.com", passwordEncoder.encode("adminPass"));
+//                userRepository.save(admin);
+//            }
+//
+//            // Update roles for existing users
+//            userRepository.findByEmail("user1@example.com").ifPresent(user -> {
+//                user.setRoles(userRoles);
+//                userRepository.save(user);
+//            });
+//
+//            userRepository.findByUserName("seller@example.com").ifPresent(seller -> {
+//                seller.setRoles(sellerRoles);
+//                userRepository.save(seller);
+//            });
+//
+//            userRepository.findByUserName("admin@example.com").ifPresent(admin -> {
+//                admin.setRoles(adminRoles);
+//                userRepository.save(admin);
+//            });
+//        };
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){

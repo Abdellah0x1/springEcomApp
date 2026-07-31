@@ -18,5 +18,6 @@ public interface ProductService {
 
     ProductResponse getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
-//    ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException;
+    ProductResponse getProductsBySeller(Long sellerId,Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+
 }

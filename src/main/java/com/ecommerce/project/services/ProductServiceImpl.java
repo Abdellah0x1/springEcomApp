@@ -2,10 +2,7 @@ package com.ecommerce.project.services;
 
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
-import com.ecommerce.project.model.Cart;
-import com.ecommerce.project.model.Category;
-import com.ecommerce.project.model.Product;
-import com.ecommerce.project.model.ProductImage;
+import com.ecommerce.project.model.*;
 import com.ecommerce.project.payload.CartDTO;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductImageDTO;
@@ -13,6 +10,7 @@ import com.ecommerce.project.payload.ProductResponse;
 import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.repositories.CategoryRepository;
 import com.ecommerce.project.repositories.ProductRepository;
+import com.ecommerce.project.utils.AuthUtils;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +52,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+    @Autowired
+    private AuthUtils authUtils;
 
     public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sort = sortOrder.equalsIgnoreCase("asc")? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -113,6 +113,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     public ProductDTO createProduct(ProductDTO productDTO,Long categoryId,List<MultipartFile> images) throws IOException {
+        User user = authUtils.loggedInUser();
         Category category = categoryRepository.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category", "id", categoryId));
 
         List<Product> products =  category.getProducts();
@@ -122,6 +123,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = mapper.map(productDTO, Product.class);
+        product.setUser(user);
         product.setProductImages(new ArrayList<>());
 
         product.setCategory(category);
@@ -223,6 +225,37 @@ public class ProductServiceImpl implements ProductService {
         response.setTotalElements(productPage.getContent().size());
         response.setLastPage(productPage.isLast());
         return  response;
+    }
+
+    @Override
+    public ProductResponse getProductsBySeller(Long sellerId,Integer pageNumber, Integer pageSize, String sortBy, String sortOrder){
+
+        Sort sort = sortOrder.equalsIgnoreCase("asc")? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Product> productPage = productRepository.findBySellerUserId(sellerId,pageDetails);
+
+
+        List<Product> products = productPage.getContent();
+        List<ProductDTO> productDTOS = products.stream().map(product -> {
+            ProductDTO productDTO =  mapper.map(product, ProductDTO.class);
+            List<ProductImageDTO> productDTOImages = product.getProductImages().stream().map(productImage -> mapper.map(productImage, ProductImageDTO.class)).toList();
+            productDTO.setImages(productDTOImages);
+            return productDTO;
+        }).toList();
+
+        if(products.isEmpty()){
+            throw new APIException("No products found");
+        }
+        ProductResponse response = new ProductResponse();
+
+        response.setContent(productDTOS);
+        response.setPageNumber(pageDetails.getPageNumber());
+        response.setPageSize(pageDetails.getPageSize());
+        response.setTotalPages(productPage.getTotalPages());
+        response.setTotalElements(productPage.getContent().size());
+        response.setLastPage(productPage.isLast());
+
+        return response;
     }
 
 
