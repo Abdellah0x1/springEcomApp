@@ -20,4 +20,5 @@ public interface ProductService {
 
     ProductResponse getProductsBySeller(Long sellerId,Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
+    ProductDTO getProductById(Long productId);
 }

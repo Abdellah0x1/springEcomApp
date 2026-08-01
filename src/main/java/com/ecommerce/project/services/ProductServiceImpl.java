@@ -258,6 +258,13 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
+    @Override
+    public ProductDTO getProductById(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(()-> new ResourceNotFoundException("Product","ProductId", productId));
+        ProductDTO productDTO = mapper.map(product,ProductDTO.class);
+        return  productDTO;
+    }
+
 
 //    @Override
 //    public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {

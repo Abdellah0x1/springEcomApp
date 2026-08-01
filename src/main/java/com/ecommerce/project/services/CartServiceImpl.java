@@ -5,8 +5,10 @@ import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Cart;
 import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Product;
+import com.ecommerce.project.model.ProductImage;
 import com.ecommerce.project.payload.CartDTO;
 import com.ecommerce.project.payload.ProductDTO;
+import com.ecommerce.project.payload.ProductImageDTO;
 import com.ecommerce.project.repositories.CartItemRepository;
 import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.repositories.ProductRepository;
@@ -128,7 +130,13 @@ public class CartServiceImpl implements CartService {
             throw new ResourceNotFoundException("Cart", "CartId", cartId);
         }
         CartDTO cartDTO =modelMapper.map(cart, CartDTO.class);
-        List<ProductDTO> productDTOS = cart.getCartItems().stream().map(item-> modelMapper.map(item.getProduct(), ProductDTO.class)).toList();
+        List<ProductDTO> productDTOS = cart.getCartItems().stream().map(item->{
+            ProductDTO productDTO =  modelMapper.map(item.getProduct(), ProductDTO.class);
+            List<ProductImageDTO> productImages = item.getProduct().getProductImages().stream().map(image -> modelMapper.map(image, ProductImageDTO.class)).toList();
+            productDTO.setImages(productImages);
+            return productDTO;
+        }).toList();
+        
         cartDTO.setProducts(productDTOS);
         return cartDTO;
     }
