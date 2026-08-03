@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JoinColumn(name="card_item_id")
     private Long id;
 
     @ManyToOne

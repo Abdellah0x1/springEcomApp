@@ -24,9 +24,8 @@ public class Cart {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name="cart_items", joinColumns = @JoinColumn(name="cart_id"), inverseJoinColumns = @JoinColumn(name="product_id"))
-        private List<CartItem> cartItems = new ArrayList<>();
+    @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<CartItem> cartItems = new ArrayList<>();
 
     private Double totalPrice = 0.0;
 }

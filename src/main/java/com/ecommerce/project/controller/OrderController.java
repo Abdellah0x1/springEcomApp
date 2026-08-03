@@ -18,19 +18,32 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/order/user/payments/{paymentMethod}")
-    public ResponseEntity<OrderDTO> orderProducts(@PathVariable String paymentMethod , @RequestBody OrderRequestDTO orderRequest){
+//    @PostMapping("/order/user/payments/{paymentMethod}")
+//    public ResponseEntity<OrderDTO> orderProducts(@PathVariable String paymentMethod , @RequestBody OrderRequestDTO orderRequest){
+//        String email = authUtils.loggedInEmail();
+//
+//        OrderDTO orderDTO = orderService.placeOrder(
+//                email,
+//                orderRequest.getAddressId(),
+//                paymentMethod,
+//                orderRequest.getPgName(),
+//                orderRequest.getPgPaymentId(),
+//                orderRequest.getPgStatus(),
+//                orderRequest.getPgResponseMessage()
+//        );
+//        return new ResponseEntity<>(orderDTO, HttpStatus.CREATED);
+//    }
+
+    @PostMapping("/orders")
+    public ResponseEntity<OrderDTO> createOrder(
+            @RequestBody OrderRequestDTO request
+    ){
         String email = authUtils.loggedInEmail();
 
-        OrderDTO orderDTO = orderService.placeOrder(
+        OrderDTO order = orderService.createOrder(
                 email,
-                orderRequest.getAddressId(),
-                paymentMethod,
-                orderRequest.getPgName(),
-                orderRequest.getPgPaymentId(),
-                orderRequest.getPgStatus(),
-                orderRequest.getPgResponseMessage()
-        );
-        return new ResponseEntity<>(orderDTO, HttpStatus.CREATED);
+                request.getAddressId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 }

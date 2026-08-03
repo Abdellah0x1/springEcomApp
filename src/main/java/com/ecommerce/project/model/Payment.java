@@ -1,12 +1,13 @@
 package com.ecommerce.project.model;
 
+import com.ecommerce.project.enums.PaymentStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,23 +21,21 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "payment", cascade ={CascadeType.PERSIST, CascadeType.MERGE})
-    private Order order;
+    private String provider; // STRIPE For main payment provider
 
-    @NotBlank
-    @Size(min = 4, message =  "Payment method must contain at least 4 characters")
+    private String paymentIntentId;
+
     private String paymentMethod;
 
-    private String pgPaymentId;
-    private String pgStatus;
-    private String pgResponseMessage;
-    private String pgName;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
 
-    public Payment(String paymentMethod, String pgPaymentId, String pgStatus , String pgResponseMessage, String pgName){
-        this.paymentMethod  = paymentMethod;
-        this.pgPaymentId = pgPaymentId;
-        this.pgStatus = pgStatus;
-        this.pgResponseMessage = pgResponseMessage;
-        this.pgName = pgName;
-    }
+    private String currency;
+
+    private Double amount;
+
+    private LocalDateTime paidAt;
+
+    @OneToOne(mappedBy = "payment", cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    private Order order;
 }

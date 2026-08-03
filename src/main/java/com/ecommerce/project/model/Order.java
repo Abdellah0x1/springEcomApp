@@ -1,5 +1,6 @@
 package com.ecommerce.project.model;
 
+import com.ecommerce.project.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class Order {
     @Column(nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "order",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
     @JoinColumn(name = "order_date")
@@ -36,7 +37,8 @@ public class Order {
     private Double totalAmount;
 
 
-    private String orderStatus;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
     @ManyToOne
     @JoinColumn(name="address_id")
