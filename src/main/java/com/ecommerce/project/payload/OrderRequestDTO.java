@@ -9,11 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderRequestDTO {
     private Long addressId;
-    private String orderStatus;
-    private String pgPaymentId;
-    private String pgName;
-    private String pgPaymentMethod;
-    private String pgStatus;
-    private String pgResponseMessage;
-
 }

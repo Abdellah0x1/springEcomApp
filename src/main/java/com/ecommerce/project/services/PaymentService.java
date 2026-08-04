@@ -6,6 +6,7 @@
     import com.ecommerce.project.exceptions.ResourceNotFoundException;
     import com.ecommerce.project.model.*;
     import com.ecommerce.project.payload.PaymentIntentResponse;
+    import com.ecommerce.project.payload.PaymentRequest;
     import com.ecommerce.project.repositories.CartRepository;
     import com.ecommerce.project.repositories.OrderRepository;
     import com.ecommerce.project.repositories.PaymentRepository;
@@ -81,7 +82,8 @@
 
 
             if(payment.getPaymentIntentId() != null){
-                throw new APIException("PaymentIntent already exists for this order");
+                PaymentIntent paymentIntent = stripeClient.v1().paymentIntents().retrieve(payment.getPaymentIntentId());
+                return new PaymentIntentResponse(order.getId(),paymentIntent.getClientSecret(),payment.getPaymentIntentId());
             }
             long amount = Math.round(order.getTotalAmount() * 100);
 

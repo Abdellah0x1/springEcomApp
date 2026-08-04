@@ -7,7 +7,6 @@ import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.*;
 import com.ecommerce.project.payload.OrderDTO;
 import com.ecommerce.project.repositories.*;
-import com.stripe.model.PaymentIntent;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,8 +99,6 @@ public class OrderServiceImpl implements OrderService{
 
         payment.setOrder(order);
         order.setPayment(payment);
-
-
 
 
         orderRepository.save(order);

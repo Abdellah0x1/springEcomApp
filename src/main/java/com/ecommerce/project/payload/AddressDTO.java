@@ -25,7 +25,7 @@ public class AddressDTO {
     public AddressDTO(String building, String city, String country, String state, String street, List<User> users) {
         this.building = building;
         this.city = city;
-        this.country = country;
+        this.country     = country;
         this.state = state;
         this.street = street;
         this.users = users;
