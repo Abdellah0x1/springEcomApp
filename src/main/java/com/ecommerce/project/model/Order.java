@@ -30,7 +30,7 @@ public class Order {
     @JoinColumn(name = "order_date")
     private LocalDate orderDate;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="payment_id")
     private Payment payment;
 

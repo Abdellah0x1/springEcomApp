@@ -15,15 +15,13 @@ public class AddressDTO {
 
     private Long addressId;
     private String street;
-    private String building;
     private String city;
     private String state;
     private String country;
     private String zipcode;
     private List<User> users = new ArrayList<>();
 
-    public AddressDTO(String building, String city, String country, String state, String street, List<User> users) {
-        this.building = building;
+    public AddressDTO( String city, String country, String state, String street, List<User> users) {
         this.city = city;
         this.country     = country;
         this.state = state;

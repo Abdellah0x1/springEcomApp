@@ -27,9 +27,7 @@ public class Address {
     @Size(min= 5, message = "Street name must contain at least 5 characters")
     private String street;
 
-    @NotBlank
-    @Size(min= 5, message = "Building name must contain at least 5 characters")
-    private String building;
+
 
     @NotBlank
     @Size(min= 3, message = "city name must contain at least 3 characters")
@@ -52,8 +50,7 @@ public class Address {
     @JoinColumn(name="user_id")
     private User user;
 
-    public Address(String building, String city, String country, String state, String street, User users) {
-        this.building = building;
+    public Address( String city, String country, String state, String street, User users) {
         this.city = city;
         this.country = country;
         this.state = state;

@@ -27,6 +27,8 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     ModelMapper modelMapper;
 
+
+
     public AddressDTO createAddress(AddressDTO addressDTO, User user) {
         Address address = modelMapper.map(addressDTO , Address.class);
 
@@ -37,11 +39,14 @@ public class AddressServiceImpl implements AddressService {
         address.setUser(user);
 
         Address newAddress = addressRepository.save(address);
-        return modelMapper.map(newAddress, AddressDTO.class);
+        AddressDTO newAddressDTO = modelMapper.map(newAddress, AddressDTO.class);
+        newAddressDTO.getUsers().stream().map(addressUser -> modelMapper.map(addressUser, User.class));
+        return newAddressDTO ;
     }
 
     public List<AddressDTO> getAllAddresses(){
         List<Address> addresses = addressRepository.findAll();
+
         return addresses.stream().map(address -> modelMapper.map(address, AddressDTO.class)).toList();
     }
 
@@ -65,7 +70,6 @@ public class AddressServiceImpl implements AddressService {
         addressFromDB.setStreet(addressDTO.getStreet());
         addressFromDB.setState(addressDTO.getState());
         addressFromDB.setZipcode(addressDTO.getZipcode());
-        addressDTO.setBuilding(addressDTO.getBuilding());
 
         Address updatedAddress = addressRepository.save(addressFromDB);
 
