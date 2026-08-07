@@ -1,0 +1,27 @@
+services:
+  spring-boot:
+    build: .
+    ports:
+      - target: 8080
+        published: 8080
+
+
+    networks:
+      spring-net:
+  postgres:
+    image: "postgres:18.4-alpine"
+    networks:
+      spring-net:
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "@@abdo@@"
+
+networks:
+  spring-net:
+
+
+volumes:
+  postgres_data:
