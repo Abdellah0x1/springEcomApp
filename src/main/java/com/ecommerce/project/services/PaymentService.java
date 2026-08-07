@@ -6,7 +6,6 @@
     import com.ecommerce.project.exceptions.ResourceNotFoundException;
     import com.ecommerce.project.model.*;
     import com.ecommerce.project.payload.PaymentIntentResponse;
-    import com.ecommerce.project.payload.PaymentRequest;
     import com.ecommerce.project.repositories.CartRepository;
     import com.ecommerce.project.repositories.OrderRepository;
     import com.ecommerce.project.repositories.PaymentRepository;
@@ -28,7 +27,6 @@
     import org.springframework.beans.factory.annotation.Value;
     import org.springframework.stereotype.Service;
 
-    import java.time.LocalDate;
     import java.time.LocalDateTime;
 
     @Service
@@ -53,7 +51,7 @@
         @Autowired
         private AuthUtils authUtils;
 
-        @Autowired
+
         private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
         @Value("${spring.stripe.webhook.secret}")
@@ -104,14 +102,20 @@
 
         public void handleWebhook(String payload, String signature){
             Event event ;
+
             try {
                 event = Webhook.constructEvent(
                         payload,
                         signature,
                         webHookSecret
                 );
+                System.out.println("Received event: " + event.getType());
+
             } catch (SignatureVerificationException e) {
                 throw new APIException("Invalid Stripe signature");
+            }catch(Exception e){
+                e.printStackTrace();
+                throw e;
             }
             switch (event.getType()){
                 case "payment_intent.succeeded":
@@ -124,12 +128,30 @@
         }
 
         private void handleSuccessfulPayment(Event event){
+
+            System.out.println(" ==== Handle Successfull Payment ====");
+
+
             EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+
+            System.out.println("Has Object " + deserializer.getObject().isPresent());
+
+            if(!deserializer.getObject().isPresent()){
+                System.out.println(deserializer.getRawJson());
+            }
+
+
             StripeObject stripeObject = deserializer.getObject().orElseThrow();
             PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
 
+            System.out.println("Payment intent id  " + paymentIntent.getId());
+
+
+
 
             Payment payment = paymentRepository.findByPaymentIntentId(paymentIntent.getId());
+
+            System.out.println("Payment found "  + payment);
 
             if(payment == null) throw new ResourceNotFoundException("Payment", "PaymentIntentId",paymentIntent.getId());
 

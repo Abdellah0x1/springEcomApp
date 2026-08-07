@@ -84,7 +84,7 @@ public class ProductController {
                                                                 @RequestParam (name="sortBy" , required = false, defaultValue = AppConstants.SORT_PRODUCTS_BY) String sortBy,
                                                                 @RequestParam (name="sortOrder" , required = false, defaultValue = AppConstants.SORT_ORDER) String sortOrder){
         ProductResponse response = productService.getProductsByKeyword(keyword,pageNumber,pageSize, sortBy, sortOrder);
-        return new ResponseEntity<>(response, HttpStatus.FOUND);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/products/{productId}")
