@@ -6,10 +6,7 @@
     import com.ecommerce.project.exceptions.ResourceNotFoundException;
     import com.ecommerce.project.model.*;
     import com.ecommerce.project.payload.PaymentIntentResponse;
-    import com.ecommerce.project.repositories.CartRepository;
-    import com.ecommerce.project.repositories.OrderRepository;
-    import com.ecommerce.project.repositories.PaymentRepository;
-    import com.ecommerce.project.repositories.ProductRepository;
+    import com.ecommerce.project.repositories.*;
     import com.ecommerce.project.utils.AuthUtils;
     import com.stripe.Stripe;
     import com.stripe.StripeClient;
@@ -52,11 +49,14 @@
         @Autowired
         private AuthUtils authUtils;
 
+        @Autowired
+        private CartItemRepository cartItemRepository;
 
         private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
         @Value("${spring.stripe.webhook.secret}")
         private String webHookSecret;
+
 
 
         @Transactional
@@ -101,6 +101,7 @@
         }
 
 
+        @Transactional
         public void handleWebhook(String payload, String signature){
             Event event ;
 
@@ -179,8 +180,12 @@
 
             //clearing the cart
             Cart cart = cartRepository.findCartByEmail(order.getEmail());
-            cart.getCartItems().clear();
-            cartRepository.save(cart);
+            if(cart != null){
+                cartItemRepository.deleteByCartId(cart.getId());
+                cart.getCartItems().clear();
+                cart.setTotalPrice(0.0);
+                cartRepository.save(cart);
+            }
 
             log.info("Payment {} succeeded", paymentIntent.getId());
 

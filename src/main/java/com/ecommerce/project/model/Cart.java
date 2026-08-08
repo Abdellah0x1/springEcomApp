@@ -2,6 +2,8 @@ package com.ecommerce.project.model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,5 +29,6 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
+    @PositiveOrZero(message = "cart total price should be positive or zero")
     private Double totalPrice = 0.0;
 }
