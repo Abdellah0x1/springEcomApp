@@ -11,6 +11,7 @@
     import com.ecommerce.project.repositories.PaymentRepository;
     import com.ecommerce.project.repositories.ProductRepository;
     import com.ecommerce.project.utils.AuthUtils;
+    import com.stripe.Stripe;
     import com.stripe.StripeClient;
     import com.stripe.exception.SignatureVerificationException;
     import com.stripe.exception.StripeException;
@@ -134,14 +135,19 @@
 
             EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
 
-            System.out.println("Has Object " + deserializer.getObject().isPresent());
+            System.out.println("Stripe SDK API version: " + Stripe.API_VERSION);
+            System.out.println("Event API version: " + event.getApiVersion());
+            System.out.println("Event type: " + event.getType());
 
-            if(!deserializer.getObject().isPresent()){
-                System.out.println(deserializer.getRawJson());
+            StripeObject stripeObject = deserializer.getObject().orElse(null);
+
+            if(stripeObject == null){
+                log.error("Could not deserialize Stripe event. Event Type " + event.getType());
+                log.error("Raw event data: {} ", deserializer.getRawJson());
+
+                return;
             }
 
-
-            StripeObject stripeObject = deserializer.getObject().orElseThrow();
             PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
 
             System.out.println("Payment intent id  " + paymentIntent.getId());

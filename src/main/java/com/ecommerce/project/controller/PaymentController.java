@@ -27,6 +27,8 @@ public class PaymentController {
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String signature
     ){
+        System.out.println("====== WEBHOOK ENTERED ======");
+        System.out.println("Signature "  + signature);
         paymentService.handleWebhook(payload,signature);
 
         return ResponseEntity.ok("Webhook processed");

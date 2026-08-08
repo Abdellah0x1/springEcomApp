@@ -4,8 +4,6 @@ services:
     ports:
       - target: 8080
         published: 8080
-
-
     networks:
       spring-net:
   postgres:
