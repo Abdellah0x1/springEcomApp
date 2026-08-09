@@ -6,7 +6,10 @@ import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.*;
 import com.ecommerce.project.payload.OrderDTO;
+import com.ecommerce.project.payload.OrderItemDTO;
+import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.repositories.*;
+import com.ecommerce.project.utils.AuthUtils;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,9 @@ public class OrderServiceImpl implements OrderService{
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private AuthUtils authUtils;
 
     @Override
     @Transactional
@@ -104,6 +110,33 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.save(order);
 
         return modelMapper.map(order, OrderDTO.class);
+    }
+
+    @Override
+    public List<OrderDTO> getCurrentSellerOrders() {
+        User user = authUtils.loggedInUser();
+        List<Order> orders = orderRepository.findOrdersBySellerId(user.getUserId());
+
+
+        List<OrderDTO> orderDTOs = orders.stream().map(order -> {
+            OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+
+            if(order.getAddress() != null){
+                orderDTO.setAddressId(order.getAddress().getAddressId());
+            }
+
+            List<OrderItemDTO> orderItemDTOS = order.getOrderItems().stream().filter(
+                    item -> item.getProduct().getUser().getUserId().equals(user.getUserId())
+            ).map(item -> {
+                OrderItemDTO orderItemDTO = modelMapper.map(item, OrderItemDTO.class);
+                orderItemDTO.setProduct(modelMapper.map(item.getProduct(), ProductDTO.class));
+                return orderItemDTO;
+            }).toList();
+            orderDTO.setOrderItems(orderItemDTOS);
+            return orderDTO;
+        }).toList();
+
+        return orderDTOs;
     }
 
 //    @Override

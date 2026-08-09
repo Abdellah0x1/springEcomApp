@@ -23,11 +23,6 @@ public class NotificationController {
     }
 
 
-    @GetMapping
-    public ResponseEntity<Void> markAllAsRead(){
-        notificationService.markAllAsRead();
-        return ResponseEntity.noContent().build();
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNotification(@PathVariable Long id){
