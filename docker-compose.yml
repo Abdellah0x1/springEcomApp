@@ -20,6 +20,5 @@ services:
 networks:
   spring-net:
 
-
 volumes:
   postgres_data:
