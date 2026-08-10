@@ -116,8 +116,7 @@ public class OrderServiceImpl implements OrderService{
     public List<OrderDTO> getCurrentSellerOrders() {
         User user = authUtils.loggedInUser();
         List<Order> orders = orderRepository.findOrdersBySellerId(user.getUserId());
-
-
+        
         List<OrderDTO> orderDTOs = orders.stream().map(order -> {
             OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
 
