@@ -8,5 +8,5 @@
 *.iml
 
 # Maven
-target/
+
 .mvn/

@@ -24,6 +24,8 @@ services:
   redis:
     image: redis:8-alpine
     restart: unless-stopped
+    networks:
+      spring-net:
     ports:
       - "6379:6379"
 
