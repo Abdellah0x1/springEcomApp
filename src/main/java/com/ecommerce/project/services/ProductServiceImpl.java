@@ -15,6 +15,8 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +57,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private AuthUtils authUtils;
 
+
+    @Cacheable(value = "productsCache",
+        key = "#pageNumber + '-' + #pageSize + '-' + #sortBy + '-' + #sortOrder")
     public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sort = sortOrder.equalsIgnoreCase("asc")? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sort);
@@ -84,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
+    @CacheEvict(value = "productsCache" ,allEntries = true)
     public ProductDTO updateProduct(ProductDTO productDTO , Long productId){
         Product product = productRepository.findById(productId).orElseThrow(()-> new ResourceNotFoundException("Product", "id", productId));
         product.setProductName(productDTO.getProductName());
@@ -112,6 +118,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    @CacheEvict(value = "productsCache" ,allEntries = true)
     public ProductDTO createProduct(ProductDTO productDTO,Long categoryId,List<MultipartFile> images) throws IOException {
         User user = authUtils.loggedInUser();
         Category category = categoryRepository.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category", "id", categoryId));
@@ -149,6 +156,7 @@ public class ProductServiceImpl implements ProductService {
         return  newProductDTO;
     }
 
+    @CacheEvict(value = "productsCache" ,allEntries = true)
     @Transactional
     public ProductDTO deleteProduct(Long productId) throws IOException {
         Product product = productRepository.findById(productId).orElseThrow(()-> new ResourceNotFoundException("Product", "id", productId));
