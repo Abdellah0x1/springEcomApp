@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Map;
 
 @Service
@@ -69,10 +70,10 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productPage.getContent();
         List<ProductDTO> productDTOS = products.stream().map(product ->{
             ProductDTO productDTO =  mapper.map(product, ProductDTO.class);
-            List<ProductImageDTO> productDTOImages = product.getProductImages().stream().map(productImage -> mapper.map(productImage, ProductImageDTO.class)).toList();
+            List<ProductImageDTO> productDTOImages = product.getProductImages().stream().map(productImage -> mapper.map(productImage, ProductImageDTO.class)).collect(Collectors.toList());
             productDTO.setImages(productDTOImages);
             return productDTO;
-        }).toList();
+        }).collect(Collectors.toList());
 
         if(products.isEmpty()){
             throw new APIException("No products found");
