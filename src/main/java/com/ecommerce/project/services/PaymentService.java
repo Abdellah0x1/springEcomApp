@@ -1,5 +1,6 @@
     package com.ecommerce.project.services;
 
+    import com.ecommerce.project.enums.NotificationType;
     import com.ecommerce.project.enums.OrderStatus;
     import com.ecommerce.project.enums.PaymentStatus;
     import com.ecommerce.project.exceptions.APIException;
@@ -51,6 +52,9 @@
 
         @Autowired
         private CartItemRepository cartItemRepository;
+
+        @Autowired
+        private NotificationService notificationService;
 
         private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
@@ -136,9 +140,6 @@
 
             EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
 
-            System.out.println("Stripe SDK API version: " + Stripe.API_VERSION);
-            System.out.println("Event API version: " + event.getApiVersion());
-            System.out.println("Event type: " + event.getType());
 
             StripeObject stripeObject = deserializer.getObject().orElse(null);
 
@@ -168,6 +169,15 @@
             Order order = payment.getOrder();
 
             order.setOrderStatus(OrderStatus.PAID);
+
+
+            notificationService.createNotification(
+                    "New order received. Payment: "
+                            + payment.getAmount() + " "
+                            + payment.getCurrency(),
+                    NotificationType.NEW_ORDER
+            );
+
 
             // reducing the stock
             for(OrderItem orderItem: order.getOrderItems()){
