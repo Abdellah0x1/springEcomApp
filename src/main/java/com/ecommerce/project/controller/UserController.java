@@ -7,6 +7,7 @@ import com.ecommerce.project.services.AddressService;
 import com.ecommerce.project.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,10 +25,12 @@ public class UserController {
 
 
 
+    @GetMapping("/me/addresses")
     public ResponseEntity<List<AddressDTO>> getMyAddresses(){
         return ResponseEntity.ok(addressService.getMyAddresses());
     }
 
+    @GetMapping("/me/orders")
     public ResponseEntity<List<OrderDTO>> getMyOrders(){
         return ResponseEntity.ok(orderService.getMyOrders());
     }
