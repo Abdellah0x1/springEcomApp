@@ -2,6 +2,7 @@ package com.ecommerce.project.services;
 
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.AddressDTO;
+import com.ecommerce.project.payload.OrderDTO;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface AddressService {
     AddressDTO updateAddresss(Long addressId, AddressDTO addressDTO);
 
     String deleteAddress(Long addressId);
+
+    List<AddressDTO> getMyAddresses();
 }

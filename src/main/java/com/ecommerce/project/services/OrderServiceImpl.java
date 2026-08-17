@@ -138,6 +138,14 @@ public class OrderServiceImpl implements OrderService{
         return orderDTOs;
     }
 
+    @Override
+    public List<OrderDTO> getMyOrders() {
+        String userEmail = authUtils.loggedInEmail();
+        List<Order> userOrders  = orderRepository.findByUserId(userEmail);
+
+        return userOrders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).toList();
+    }
+
 //    @Override
 //    @Transactional
 //    public OrderDTO placeOrder(String email, Long addressId, String paymentMethod, String pgName, String pgPaymentId, String pgStatus, String pgResponseMessage) {

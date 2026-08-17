@@ -4,6 +4,7 @@ import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Address;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.AddressDTO;
+import com.ecommerce.project.payload.OrderDTO;
 import com.ecommerce.project.repositories.AddressRepository;
 import com.ecommerce.project.repositories.UserRepository;
 import com.ecommerce.project.utils.AuthUtils;
@@ -94,5 +95,13 @@ public class AddressServiceImpl implements AddressService {
 
          addressRepository.delete(address);
          return "Address deleted successfully with id: " + addressId;
+    }
+
+    @Override
+    public List<AddressDTO> getMyAddresses() {
+        User user = authUtils.loggedInUser();
+        List<Address> userAddresses  = addressRepository.findByUserId(user.getUserId());
+
+        return userAddresses.stream().map(address -> modelMapper.map(address, AddressDTO.class)).toList();
     }
 }

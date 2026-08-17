@@ -20,4 +20,7 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     """)
     List<Order> findOrdersBySellerId(Long id);
 
+
+    @Query("SELECT o FROM Order o WHERE o.email = ?1")
+    List<Order> findByUserId(String email);
 }
