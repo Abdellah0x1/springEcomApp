@@ -39,9 +39,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Autowired
     private CategoryRepository categoryRepository;
-
-    @Autowired
-    private FileService fileService;
+    
 
     @Value("${project.image}")
     private String path;

@@ -46,6 +46,19 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
+    public void createNotification(String message, NotificationType type, User user){
+        Notification notification = new Notification();
+
+        notification.setMessage(message);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setType(type);
+        notification.setUser(user);
+        notification.setIsRead(false);
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
     public void markAllAsRead() {
         User user = authUtils.loggedInUser();
         List<Notification> userNotifications = notificationRepository.getNotificationByUserId(user.getUserId());
