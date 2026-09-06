@@ -26,8 +26,7 @@ public class NotificationServiceImpl implements NotificationService{
     @Override
     public List<Notification> getUserNotifications() {
         User user = authUtils.loggedInUser();
-        List<Notification> userNotifications = notificationRepository.getNotificationByUserId(user.getUserId());
-        return userNotifications;
+        return notificationRepository.getNotificationByUserId(user.getUserId());
     }
 
 
