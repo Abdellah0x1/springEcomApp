@@ -21,4 +21,8 @@ public interface ProductService {
     ProductResponse getProductsBySeller(Long sellerId,Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
     ProductDTO getProductById(Long productId);
+
+    ProductDTO uploadProductImages(Long productId, List<MultipartFile> images) throws IOException;
+
+    void deleteProductImage(Long productId, Long imageId) throws IOException;
 }

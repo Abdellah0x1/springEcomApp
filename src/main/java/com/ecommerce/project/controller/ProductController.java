@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConstants;
+import com.ecommerce.project.model.Product;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductResponse;
 import com.ecommerce.project.services.ProductService;
@@ -92,5 +93,17 @@ public class ProductController {
         ProductDTO productDTO = productService.deleteProduct(productId);
         return productDTO;
     }
-    
+
+    @PostMapping("/admin/products/{productId}/images")
+    public ResponseEntity<ProductDTO> uploadProductImages(@PathVariable Long productId , @RequestParam("images") List<MultipartFile> images) throws IOException {
+        ProductDTO productDTO = productService.uploadProductImages(productId,images);
+        return new ResponseEntity<>(productDTO, HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/admin/products/{productId}/images/{imageId}")
+    public ResponseEntity<ProductDTO> deleteProductImage(@PathVariable Long productId, @PathVariable Long imageId) throws IOException {
+        productService.deleteProductImage(productId, imageId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

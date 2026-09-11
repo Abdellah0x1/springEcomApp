@@ -273,6 +273,42 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    @Override
+    public ProductDTO uploadProductImages(Long productId, List<MultipartFile> images) throws IOException {
+        Product product = productRepository.findById(productId).orElseThrow(()-> new ResourceNotFoundException("Product","ProductId", productId));
+
+        int displayOrder = 0;
+        for (MultipartFile image : images){
+            Map<?,?> result = cloudinaryService.uploadFile(image);
+            ProductImage productImage = new ProductImage();
+            productImage.setPublicId(result.get("public_id").toString());
+            productImage.setUrl(result.get("secure_url").toString());
+            productImage.setDisplayOrder(displayOrder++);
+            productImage.setProduct(product);
+
+            product.getProductImages().add(productImage);
+        }
+        productRepository.save(product);
+
+        return mapper.map(product,ProductDTO.class);
+    }
+
+
+    @Override
+    public void deleteProductImage(Long productId, Long imageId) throws IOException {
+        Product product = productRepository.findById(productId).orElseThrow(()-> new ResourceNotFoundException("Product","ProductId", productId));
+
+
+        ProductImage productImage = product.getProductImages().stream()
+                .filter(image -> image.getId().equals(imageId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Image", "ImageId", imageId));
+        cloudinaryService.deleteFile(productImage.getPublicId());
+        product.getProductImages().remove(productImage);
+
+        productRepository.save(product);
+    }
+
 //    @Override
 //    public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
 //        //get product from db
