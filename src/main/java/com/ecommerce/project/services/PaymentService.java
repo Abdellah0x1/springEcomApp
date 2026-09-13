@@ -172,14 +172,39 @@ public class PaymentService {
         User orderUser = userRepository.findByEmail(order.getEmail())
                 .orElse(null);
 
-        if (orderUser != null) {
+
+
+//        notify every product owner from orderItems in placed order.
+
+        for (OrderItem orderItem : order.getOrderItems()){
+            String productName = orderItem.getProduct().getProductName();
+            String truncated = productName.length() > 15 ? productName.substring(0, 15) : productName;
+
+            String message = "Order Confirmed for "  + truncated;
+
+
             notificationService.createNotification(
-                    "New order received. Payment: "
-                            + payment.getAmount() + " "
-                            + payment.getCurrency(),
+                    message,
                     NotificationType.NEW_ORDER,
-                    orderUser);
+                    orderItem.getProduct().getUser()
+            );
         }
+
+        // notify buyer
+        notificationService.createNotification(
+                "Payment Successfull ",
+                NotificationType.NEW_ORDER,
+                order.getAddress().getUser()
+                );
+
+//        if (orderUser != null) {
+//            notificationService.createNotification(
+//                    "New order received. Payment: "
+//                            + payment.getAmount() + " "
+//                            + payment.getCurrency(),
+//                    NotificationType.NEW_ORDER,
+//                    orderUser);
+//        }
 
         // reducing the stock
         for (OrderItem orderItem : order.getOrderItems()) {
@@ -220,6 +245,9 @@ public class PaymentService {
 
         payment.setStatus(PaymentStatus.FAILED);
         payment.getOrder().setOrderStatus(OrderStatus.PAYMENT_FAILED);
+
+        // notify user about failed payment
+        notificationService.createNotification("Payment failed ", NotificationType.PAYMENT_FAILED, payment.getOrder().getAddress().getUser());
 
         paymentRepository.save(payment);
         orderRepository.save(payment.getOrder());

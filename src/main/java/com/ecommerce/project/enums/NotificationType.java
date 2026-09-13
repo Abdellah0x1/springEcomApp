@@ -5,5 +5,5 @@ public enum NotificationType {
     NEW_ORDER,
     ORDER_CANCELLED,
     RETURN_REQUESTED,
-
+    PAYMENT_FAILED
 }
