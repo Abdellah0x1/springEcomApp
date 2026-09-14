@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,8 +19,13 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Autowired
     private AuthUtils authUtils;
+
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private SseEmitterService sseEmitterService ;
+
 
     @Autowired
     private NotificationRepository  notificationRepository;
@@ -32,7 +38,7 @@ public class NotificationServiceImpl implements NotificationService{
 
 
     @Override
-    public void createNotification(String message, NotificationType type){
+    public void createNotification(String message, NotificationType type) throws IOException {
         Notification notification = new Notification();
         User user = authUtils.loggedInUser();
 
@@ -43,10 +49,13 @@ public class NotificationServiceImpl implements NotificationService{
         notification.setIsRead(false);
 
         notificationRepository.save(notification);
+
+        // Push via sse in real-time
+        sseEmitterService.sendToUser(user.getUserId(), notification);
     }
 
     @Override
-    public void createNotification(String message, NotificationType type, User user){
+    public void createNotification(String message, NotificationType type, User user) throws IOException {
         Notification notification = new Notification();
 
         notification.setMessage(message);
@@ -56,6 +65,7 @@ public class NotificationServiceImpl implements NotificationService{
         notification.setIsRead(false);
 
         notificationRepository.save(notification);
+        sseEmitterService.sendToUser(user.getUserId(), notification);
     }
 
     @Override
