@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
@@ -26,7 +28,7 @@ public class PaymentController {
     public ResponseEntity<String> handleWebHook(
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String signature
-    ){
+    ) throws IOException {
         System.out.println("====== WEBHOOK ENTERED ======");
         System.out.println("Signature "  + signature);
         paymentService.handleWebhook(payload,signature);

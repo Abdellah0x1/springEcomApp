@@ -1,6 +1,9 @@
 services:
   spring-boot:
     build: .
+    depends_on:
+      - postgres
+      - redis
     ports:
       - target: 8080
         published: 8080
@@ -21,7 +24,6 @@ services:
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
 
-
   postgres:
     image: "postgres:18.4-alpine"
     networks:
@@ -29,13 +31,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
 
-
-
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d ecommerce" ]
       interval: 5s
       timeout: 5s
-      retries: 10 
+      retries: 10
   redis:
     image: redis:8-alpine
     restart: unless-stopped

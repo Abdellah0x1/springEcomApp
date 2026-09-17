@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
@@ -109,7 +110,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public void handleWebhook(String payload, String signature) {
+    public void handleWebhook(String payload, String signature) throws IOException {
         Event event;
 
         try {
@@ -135,7 +136,7 @@ public class PaymentService {
         }
     }
 
-    private void handleSuccessfulPayment(Event event) {
+    private void handleSuccessfulPayment(Event event) throws IOException {
 
         System.out.println(" ==== Handle Successfull Payment ====");
 
@@ -233,7 +234,7 @@ public class PaymentService {
 
     }
 
-    private void handleFailedPayment(Event event) {
+    private void handleFailedPayment(Event event) throws IOException {
         EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
         StripeObject stripeObject = deserializer.getObject().orElseThrow();
         PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
