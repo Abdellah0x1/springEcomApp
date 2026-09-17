@@ -66,6 +66,12 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDTO updateAddresss(Long addressId, AddressDTO addressDTO) {
         Address addressFromDB = addressRepository.findById(addressId).orElseThrow(()-> new ResourceNotFoundException("Address","id", addressId));
+
+        User loggedInUser = authUtils.loggedInUser();
+        if (!loggedInUser.getUserId().equals(addressFromDB.getUser().getUserId())) {
+            throw new ResourceNotFoundException("Address", "id", addressId);
+        }
+
         addressFromDB.setCity(addressDTO.getCity());
         addressFromDB.setCountry(addressDTO.getCountry());
         addressFromDB.setStreet(addressDTO.getStreet());
@@ -89,9 +95,15 @@ public class AddressServiceImpl implements AddressService {
     public String deleteAddress(Long addressId) {
          Address address = addressRepository.findById(addressId).orElseThrow(()-> new ResourceNotFoundException("Address","id", addressId));
 
-         User user = address.getUser();
-         user.getAddresses().removeIf(userAddress -> userAddress.getAddressId().equals(addressId));
-         userRepository.save(user);
+         User loggedInUser = authUtils.loggedInUser();
+         User addressOwner = address.getUser();
+
+         if (!loggedInUser.getUserId().equals(addressOwner.getUserId())) {
+             throw new ResourceNotFoundException("Address", "id", addressId);
+         }
+
+         addressOwner.getAddresses().removeIf(userAddress -> userAddress.getAddressId().equals(addressId));
+         userRepository.save(addressOwner);
 
          addressRepository.delete(address);
          return "Address deleted successfully with id: " + addressId;

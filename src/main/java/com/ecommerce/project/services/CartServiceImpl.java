@@ -154,6 +154,14 @@ public class CartServiceImpl implements CartService {
     @Override
     public String deleteProductFromCart(Long cartId, Long productId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(()-> new ResourceNotFoundException("Cart", "CartId", cartId));
+
+        // Verify the cart belongs to the logged-in user
+        String loggedInEmail = authUtils.loggedInEmail();
+        Cart userCart = cartRepository.findCartByEmail(loggedInEmail);
+        if (userCart == null || !userCart.getId().equals(cartId)) {
+            throw new ResourceNotFoundException("Cart", "CartId", cartId);
+        }
+
         CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cartId, productId);
 
         if(cartItem == null){

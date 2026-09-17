@@ -1,6 +1,7 @@
 package com.ecommerce.project.services;
 
 import com.ecommerce.project.enums.NotificationType;
+import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Notification;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.repositories.NotificationRepository;
@@ -78,7 +79,10 @@ public class NotificationServiceImpl implements NotificationService{
     
     @Override
     public void deleteNotification(Long id){
-        notificationRepository.deleteById(id);
+        User user = authUtils.loggedInUser();
+        Notification notification = notificationRepository.findByIdAndUserId(id, user.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
+        notificationRepository.delete(notification);
     }
 
 }
