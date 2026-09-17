@@ -22,7 +22,9 @@ jobs:
           cache: maven
 
       - name: Build
-        run: ./mvnw clean package -DskipTests
+        run: |
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
 
   deploy:
     needs: build
