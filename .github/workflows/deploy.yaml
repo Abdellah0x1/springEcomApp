@@ -41,6 +41,6 @@ jobs:
           script: |
             cd /opt/spring-ecommerce/backend
             git pull origin main
-            sudo docker compose up -d --build
+            sudo docker compose up -d --build --scale spring-boot=3
             
 
