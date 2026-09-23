@@ -34,5 +34,5 @@ public class Notification {
     @JsonIgnore
     private User user;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt =  LocalDateTime.now();
 }
