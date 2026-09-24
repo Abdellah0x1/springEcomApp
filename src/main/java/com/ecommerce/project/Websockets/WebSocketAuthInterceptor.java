@@ -10,10 +10,13 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.List;
 
 @Component
@@ -27,7 +30,10 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel){
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        if (accessor == null) {
+            accessor = StompHeaderAccessor.wrap(message);
+        }
 
         if(StompCommand.CONNECT.equals(accessor.getCommand())){
 
@@ -39,15 +45,32 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             String token = authHeaders.getFirst();
             String jwt = token.substring(7);
 
-
-
             if(jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                accessor.setUser(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                accessor.setUser(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } else {
+            // For all non-CONNECT frames (SEND, SUBSCRIBE, etc.), propagate
+            // the STOMP session principal into the SecurityContext so that
+            // downstream services using AuthUtils / SecurityContextHolder
+            // can resolve the authenticated user on the message-handling thread.
+            Principal principal = accessor.getUser();
+            if (principal instanceof UsernamePasswordAuthenticationToken authToken) {
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
         return message;
+    }
+
+    @Override
+    public void afterMessageHandled(Message<?> message, MessageChannel channel, boolean sent) {
+        // Clear the SecurityContext after message handling to prevent leaking
+        // authentication to other threads from the executor pool.
+        SecurityContextHolder.clearContext();
     }
 }
