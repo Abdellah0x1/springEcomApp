@@ -60,7 +60,7 @@ public class WebSocketAuthInterceptor implements ExecutorChannelInterceptor {
             // downstream services using AuthUtils / SecurityContextHolder
             // can resolve the authenticated user on the message-handling thread.
             Principal principal = accessor.getUser();
-            if (principal instanceof UsernamePasswordAuthenticationToken authTokden) {
+            if (principal instanceof UsernamePasswordAuthenticationToken authToken) {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
