@@ -105,6 +105,11 @@ public class ConversationService {
 
     public ConversationDTO getConversationById(Long id) {
         Conversation conversation = conversationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Conversation", "id", id));
+
+        if(!conversation.getCustomer().getUserId().equals(authUtils.loggedInUserId()) && !conversation.getSeller().getUserId().equals(authUtils.loggedInUserId())){
+            throw new APIException("You're not a participant in this conversation");
+        }
+
         return mapToConversationDTO(conversation, authUtils.loggedInUserId());
 
     }
