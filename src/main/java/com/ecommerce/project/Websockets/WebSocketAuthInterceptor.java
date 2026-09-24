@@ -7,6 +7,7 @@ import com.ecommerce.project.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ExecutorChannelInterceptor;
@@ -68,7 +69,7 @@ public class WebSocketAuthInterceptor implements ExecutorChannelInterceptor {
     }
 
     @Override
-    public void afterMessageHandled(Message<?> message, MessageChannel channel, boolean sent) {
+    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
         // Clear the SecurityContext after message handling to prevent leaking
         // authentication to other threads from the executor pool.
         SecurityContextHolder.clearContext();
