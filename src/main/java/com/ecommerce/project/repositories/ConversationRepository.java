@@ -9,9 +9,9 @@ import java.util.Optional;
 
 
 public interface ConversationRepository extends JpaRepository<Conversation, Long> {
-    Page<Conversation> findByCustomerIdOrSellerId(Long customerId, Long sellerId, Pageable pageable);
+    Page<Conversation> findByCustomerUserIdOrSellerUserId(Long customerId, Long sellerId, Pageable pageable);
 
-    Optional<Conversation> findByCustomerIdAndSellerIdAndProductProductId(
+    Optional<Conversation> findByCustomerUserIdAndSellerUserIdAndProductProductId(
             Long customerId, Long sellerId, Long productId
     );
 }

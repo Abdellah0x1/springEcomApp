@@ -75,7 +75,7 @@ public class ConversationService {
         if (lastMsg != null) {
             dto.setLastMessage(mapToMessageDTO(lastMsg));
         }
-        int unread = messageRepository.countByConversationIdAndSenderIdNotAndReadFalse(
+        int unread = messageRepository.countByConversationIdAndSenderUserIdNotAndReadFalse(
                 conversation.getId(), currentUserId
         );
         dto.setUnreadCount(unread);
@@ -88,7 +88,7 @@ public class ConversationService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         User customer = userRepository.findById(authUtils.loggedInUserId()).orElseThrow(()-> new ResourceNotFoundException("User", "id", authUtils.loggedInUserId()));
 
-        Optional<Conversation> conversationDB = conversationRepository.findByCustomerIdAndSellerIdAndProductProductId(customer.getUserId(), product.getUser().getUserId(),productId);
+        Optional<Conversation> conversationDB = conversationRepository.findByCustomerUserIdAndSellerUserIdAndProductProductId(customer.getUserId(), product.getUser().getUserId(),productId);
 
         if(conversationDB.isPresent()){
             throw new APIException("Conversation already exists");
@@ -118,7 +118,7 @@ public class ConversationService {
         Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<Conversation>  conversationsPafge = conversationRepository.findByCustomerIdOrSellerId(userId, userId,pageable);
+        Page<Conversation>  conversationsPafge = conversationRepository.findByCustomerUserIdOrSellerUserId(userId, userId,pageable);
         List<Conversation> conversations = conversationsPafge.getContent();
 
         if(conversations.isEmpty()){

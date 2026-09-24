@@ -16,7 +16,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     Message findTopByConversationIdOrderByCreatedAtDesc(Long conversationId);
 
-    int countByConversationIdAndSenderIdNotAndReadFalse(Long conversationId, Long senderId);
+    int countByConversationIdAndSenderUserIdNotAndReadFalse(Long conversationId, Long senderId);
 
 
     @Transactional
